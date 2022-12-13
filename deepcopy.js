@@ -1,33 +1,38 @@
-const copyObjectDeep = function(target) {
+const copyObjectDeep = function (target) {
     // null || primitive
-    if(typeof target !== 'object' || target === null) return target;
-    
+    if (typeof target !== 'object' || target === null) return target;
+
     // Object
-    let result = {};
-    if(typeof target[Symbol.iterator] !== 'function') {
+    if (typeof target[Symbol.iterator] !== 'function') {
+        const result = {};
         for (const prop in target) {
-            result[prop] = copyObjectDeep(target[prop])
+            result[prop] = copyObjectDeep(target[prop]);
         }
         return result;
     }
 
-    // map, set, array
-    if(target instanceof Map) {
-        result = new Map();
-            target.forEach((v, k) => {
-            result.set(k, copyObjectDeep(v))
-        })
+    // map
+    if (target instanceof Map) {
+        const result = new Map();
+        for (const [k, v] of target.entries()) {
+            result.set(k, copyObjectDeep(v));
+        }
         return result;
-    } else if (target instanceof Set) {
-        result = new Set()
-        target.forEach((v) => {
-            result.add(copyObjectDeep(v))
-        })
+    }
+
+    // set
+    if (target instanceof Set) {
+        const result = new Set();
+        for (const [v] of target.entries()) {
+            result.add(copyObjectDeep(v));
+        }
         return result;
-    } else if (target instanceof Array) {
-        result = target.map(v => copyObjectDeep(v))
-    }    
-    return result;
-}
+    }
+
+    // array
+    if (target instanceof Array) {
+        return target.map((v) => copyObjectDeep(v));
+    }
+};
 
 module.exports = copyObjectDeep;
